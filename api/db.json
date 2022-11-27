@@ -1,0 +1,7 @@
+{
+    "posts": 
+    [
+      { "id": 1, "title": "Quasar com Vue 3", "author": "Joel", "content": "Descrição" },
+      { "id": 2, "title": "Quasar Crud", "author": "Joel", "content": "Descrição" }
+    ]
+}
