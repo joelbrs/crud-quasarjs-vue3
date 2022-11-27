@@ -14,7 +14,8 @@
       </template>
 
       <template v-slot:body-cell-actions="props">
-        <q-td :props="props">
+        <q-td :props="props" class="q-gutter-sm">
+          <q-btn icon="edit" color="info" dense @click="handleEditPosts(props.row.id)" />
           <q-btn icon="delete" color="negative" dense @click="handleDeletePosts(props.row.id)" />
         </q-td>
       </template>
@@ -26,13 +27,14 @@
 import { defineComponent, ref, onMounted } from 'vue'
 import postsService from 'src/services/post'
 import { useQuasar } from 'quasar'
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'IndexPage',
   setup () {
     const posts = ref([])
 
-    const { list, remove } = postsService()
+    const { list, remove, update } = postsService()
 
     const columns = [
       { name: 'id', label: 'Id', field: 'id', sortable: true, align: 'left' },
@@ -42,6 +44,7 @@ export default defineComponent({
     ]
 
     const $q = useQuasar()
+    const router = useRouter()
 
     const getPosts = async () => {
       try {
@@ -66,11 +69,19 @@ export default defineComponent({
 
           await getPosts()
         })
-
-
       }
       catch(err) {
         $q.notify({ message: 'Erro ao apagar', icon: 'times', color: 'negative' })
+      }
+    }
+
+    const handleEditPosts = (id) => {
+      try {
+        router.push({ name: 'formPosts', params: { id } })
+      }
+
+      catch(err) {
+        $q.notify({ message: 'Erro ao atualizar', icon: 'times', color: 'negative' })
       }
     }
 
@@ -81,7 +92,8 @@ export default defineComponent({
     return {
       posts,
       columns,
-      handleDeletePosts
+      handleDeletePosts,
+      handleEditPosts
     }
   }
 })

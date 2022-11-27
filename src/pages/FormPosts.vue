@@ -2,7 +2,6 @@
   <q-page padding>
     <q-form
       @submit="onSubmit"
-      @reset="onReset"
       class="row q-col-gutter-sm"
     >
 
@@ -41,6 +40,7 @@
 import { defineComponent, ref, onMounted } from 'vue'
 import postsService from 'src/services/post'
 import { useQuasar } from 'quasar'
+import { useRoute, useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'FormPosts',
@@ -52,16 +52,36 @@ export default defineComponent({
       author: ''
     })
 
-    const { post } = postsService()
-
+    const { post, getById, update } = postsService()
     const $q = useQuasar()
+    const router = useRouter()
+    const route = useRoute()
+
+    onMounted( async () => {
+      if(route.params.id) {
+        const r = await getById(route.params.id)
+
+        form.value = r
+      }
+    })
 
     const onSubmit = async () => {
       try {
-        await post(form.value)
+        if (form.value.id) {
+          await update(form.value)
 
-        $q.notify({ message: 'Artigo adicionado com sucesso!', icon: 'check', color: 'positive' })
+          $q.notify({ message: 'Artigo atualizado com sucesso!', icon: 'check', color: 'positive' })
+
+        } else {
+          await post(form.value)
+
+          $q.notify({ message: 'Artigo adicionado com sucesso!', icon: 'check', color: 'positive' })
+        }
+
+        router.push({ name: 'home' })
       }
+
+
       catch(err) {
         console.log(err)
       }
